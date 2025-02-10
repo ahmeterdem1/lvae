@@ -170,7 +170,13 @@ class LatentLayer(nn.Module):
         if not self.training:
             return self.reparameterize(mu, logvar)
 
-        if self.is_filled() and self.is_ladder:
+        if not self.is_ladder:
+            self.mu = mu
+            self.logvar = logvar
+            self.register(mu, logvar)
+            return self.reparameterize(mu, logvar)
+
+        if self.is_filled():
             encoder_var_ = torch.exp(self.zs[1])
             decoder_var_ = logvar.exp()
 
